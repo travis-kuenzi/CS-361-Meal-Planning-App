@@ -37,9 +37,6 @@ app.get("/signup", (req, res) => {
     res.render("signup");
 });
 
-app.get("/login", (req, res) => {
-    res.render("login");
-});
 
 // Register User
 app.post("/signup", async (req, res) => {
@@ -49,14 +46,39 @@ app.post("/signup", async (req, res) => {
         password: req.body.password
     }
 
-    const existingUser = await User.findOne({name: data.name});
+    const existingUser = await User.findOne({name: data.username});
     if(existingUser) {
         res.send("user already exists. Please choose a different username.")
     } else {
+        // hash the password
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+
+        data.password = hashedPassword;
         const userdata = await User.insertMany(data);
         console.log(userdata);
     }
 
+});
+
+// Login User
+app.post("/login", async (req, res) => {
+    try {
+        const check = await User.findOne({username: req.body.username});
+        if (!check) {
+            res.send("User name cannot be found");
+        }
+
+        // compare the hash password from the database with the plain text
+        const isPasswordMatch = await bcrypt.compare(req.body.password, check.password);
+        if (isPasswordMatch) {
+            res.render("home");
+        } else {
+            res.send("wrong password");
+        }
+    } catch {
+        res.send("Wrong Details");
+    }
 });
 
 
