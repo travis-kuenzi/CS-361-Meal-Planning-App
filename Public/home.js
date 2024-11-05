@@ -1,33 +1,18 @@
 console.log("Script is running");
 
-let searchBtn = document.querySelector("#searchBtn");
-searchBtn.addEventListener("click", getData);
 
-// async function getData() {
-//     const url = 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/random?tags=main%20course&number=1';
-//     const options = {
-//         method: 'GET',
-//         headers: {
-//             'x-rapidapi-key': '9817e57fd8mshf7324149cf3ce09p16854fjsnfbdc7fd0ff39',
-//             'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
-//         }
-//     };
-    
-//     try {
-//         const response = await fetch(url, options);
-//         const result = await response.text();
-//         console.log(result);
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
+let searchBtn = document.querySelector("#searchBtn1");
+searchBtn.addEventListener("click", search);
+let searchBtn2 = document.querySelector("#searchBtn2");
+searchBtn2.addEventListener("click", getRandom);
+
 
 function delay(ms)
 {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function getData() 
+async function getRandom() 
 {
     const recipesDiv = document.querySelector('#recipes');
     // clear the recipes div
@@ -35,7 +20,7 @@ async function getData()
 
 
     // connection to the api
-    const url = 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/random?tags=main%20course&number=1';
+    const url = 'https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/random?tags=main%20course&number=2';
     const options = {
         method: 'GET',
         headers: {
@@ -71,24 +56,81 @@ async function getData()
     }
 }
 
+async function search() 
+{
+    const recipesDiv = document.querySelector('#recipes');
+    // clear the recipes div
+    recipesDiv.replaceChildren([]);
+
+    const input = document.querySelector('#inputTextbox');
+    const recipe = input.value;
+
+    // connection to the api
+    const url = `https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/complexSearch?query=${recipe}&type=main%20course&instructionsRequired=true&fillIngredients=false&addRecipeInformation=false&addRecipeInstructions=false&addRecipeNutrition=false&ignorePantry=true&sort=max-used-ingredients&offset=0&number=2`;
+    const options = {
+        method: 'GET',
+        headers: {
+            'x-rapidapi-key': '9817e57fd8mshf7324149cf3ce09p16854fjsnfbdc7fd0ff39',
+            'x-rapidapi-host': 'spoonacular-recipe-food-nutrition-v1.p.rapidapi.com'
+        }
+    };
+
+    // try to get the data
+    try {
+        // fetch the data
+        let response = await fetch(url, options);
+
+        // check for invalid response
+        if (response.status != 200)
+            throw response.status + " " + response.statusText;
+
+        // print the response message
+        console.log(response);
+
+
+        let recipesArray = await response.json();
+        console.log(recipesArray);
+
+        for (const recipe of recipesArray.results)
+        {
+            let recipeElement = createCard(recipe);
+            recipesDiv.appendChild(recipeElement);
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}
+
 
 function createCard(recipeObj)
 {
+    // NEED TO MAKE THIS LOOK BETTER!!!!!
+    // definitely adjust image
     //Element that contains the card and insert in layout
-    let container = createElement('div', 'col-md-6');
+    let container = createElement('div', 'col-md-3');
 
-    let card = createElement('div', 'card h-100 d-flex justify-content-center align-items-center'); // change?
+    let card = createElement('div', 'card h-200 d-flex justify-content-center align-items-center'); // change?
     container.appendChild(card);
 
-    let title = createElement('h2', 'card-title', recipeObj.title);
-    card.append(title);
+    let recipeId = recipeObj.id;
+    let link = createElement('a', 'recipe-link');
+    link.href = `/recipes/${recipeId}`;
 
-    // let img = createElement('img', 'img-fluid countryImage');
-    // img.src = countryObj.data.flagImageUri;
-    // img.style.width = "75%";
-    // img.style.height = "auto";
-    // card.appendChild(img);
-    // need to set attribute for alt
+    let title = createElement('h2', 'card-title', recipeObj.title);
+    link.appendChild(title);
+
+    let img = createElement('img', 'img-fluid recipeImage');
+    img.src = recipeObj.image;
+    img.style.width = "75%";
+    img.style.height = "auto";
+    
+    link.appendChild(img);
+    card.appendChild(link);
+
+    let summary = createElement('div', '', recipeObj.summary);
+    card.appendChild(summary);
+
 
     return container;
 }

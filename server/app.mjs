@@ -30,6 +30,9 @@ mongoose.connect(connection_string, {}).catch(err => console.log('Error connecti
 import { default as userRouter } from "./routes/users.mjs";
 app.use('/', userRouter);
 
+import { default as recipeRouter } from "./routes/recipes.mjs";
+app.use("/recipes", recipeRouter);
+
 // // router to login page
 // app.get("/", (req, res) => {
 //     res.render("login");
