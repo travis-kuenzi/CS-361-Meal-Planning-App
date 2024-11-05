@@ -103,14 +103,11 @@ async function search()
 }
 
 
-function createCard(recipeObj)
-{
-    // NEED TO MAKE THIS LOOK BETTER!!!!!
-    // definitely adjust image
-    //Element that contains the card and insert in layout
+function createCard(recipeObj) {
+    // Element that contains the card and insert in layout
     let container = createElement('div', 'col-md-3');
 
-    let card = createElement('div', 'card h-200 d-flex justify-content-center align-items-center'); // change?
+    let card = createElement('div', 'card h-200 d-flex justify-content-center align-items-center');
     container.appendChild(card);
 
     let recipeId = recipeObj.id;
@@ -124,16 +121,31 @@ function createCard(recipeObj)
     img.src = recipeObj.image;
     img.style.width = "75%";
     img.style.height = "auto";
-    
+
     link.appendChild(img);
     card.appendChild(link);
 
-    let summary = createElement('div', '', recipeObj.summary);
-    card.appendChild(summary);
+    let recipeInfo = createElement("ul");
 
+    // Adding " minutes" only if the time value exists
+    if (recipeObj.preparationMinutes) {
+        let prepTime = createElement('li', '', `${recipeObj.preparationMinutes} minutes`);
+        recipeInfo.appendChild(prepTime);
+    }
+    if (recipeObj.cookingMinutes) {
+        let cookTime = createElement('li', '', `${recipeObj.cookingMinutes} minutes`);
+        recipeInfo.appendChild(cookTime);
+    }
+    if (recipeObj.readyInMinutes) {
+        let totalTime = createElement('li', '', `${recipeObj.readyInMinutes} minutes`);
+        recipeInfo.appendChild(totalTime);
+    }
+
+    card.appendChild(recipeInfo);
 
     return container;
 }
+
 
 
 

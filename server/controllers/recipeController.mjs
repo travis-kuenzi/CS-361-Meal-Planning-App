@@ -1,7 +1,7 @@
 
 async function browseRecipes(req, res, next) {
     try {
-        res.redirect("home.html");
+        res.render("browseRecipes.ejs");
     } catch (err) {
         console.error('Something went wrong when trying to display home:', err);
     }

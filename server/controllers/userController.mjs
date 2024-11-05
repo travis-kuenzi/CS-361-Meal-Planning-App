@@ -10,7 +10,6 @@ async function login(req, res, next) {
     } catch (err) {
         console.error('Error in genreList:', err);
     }
-    
 };
 
 async function signup(req, res, next) {
@@ -35,7 +34,7 @@ async function createUser(req, res, next) {
         const userdata = await User.insertMany(data);
         console.log(userdata);
 
-        res.redirect("home.html");
+        res.render("browseRecipes.ejs");
     }
 };
 
@@ -49,7 +48,7 @@ async function loginUser(req, res, next) {
         // compare the hash password from the database with the plain text
         const isPasswordMatch = await bcrypt.compare(req.body.password, check.password);
         if (isPasswordMatch) {
-            res.redirect("home.html");
+            res.render("browseRecipes.ejs");
         } else {
             res.send("wrong password");
         }
@@ -58,4 +57,12 @@ async function loginUser(req, res, next) {
     }   
 };
 
-export {login, signup, createUser, loginUser};
+async function verifyLogOut(req, res, next) {
+    try {
+        res.render("logOutVerifyPage.ejs");
+    } catch (err) {
+        console.error("Couldn't display verifyLogOut", err);
+    }
+}
+
+export {login, signup, createUser, loginUser, verifyLogOut};
